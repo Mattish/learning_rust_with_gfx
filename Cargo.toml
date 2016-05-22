@@ -1,0 +1,8 @@
+[package]
+name = "gfx_test"
+version = "0.1.0"
+authors = ["Mattish <mattishd@gmail.com>"]
+
+[dependencies]
+glium = "*"
+time = "*"
