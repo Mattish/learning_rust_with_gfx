@@ -6,3 +6,4 @@ authors = ["Mattish <mattishd@gmail.com>"]
 [dependencies]
 glium = "*"
 time = "*"
+image = "*"
