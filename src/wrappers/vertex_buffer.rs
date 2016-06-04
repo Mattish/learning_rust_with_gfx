@@ -43,7 +43,7 @@ impl VertexBufferWrapper {
             length: array_len,
         };
         for v in input_array.into_iter() {
-            writer_mapping.set(counter, vertex::Vertex { position: v.position });
+            writer_mapping.set(counter, v.clone());
             counter = counter + 1;
         }
         self.remaining = self.remaining - array_len;
