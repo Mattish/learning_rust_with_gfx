@@ -7,3 +7,6 @@ authors = ["Mattish <mattishd@gmail.com>"]
 glium = "*"
 time = "*"
 image = "*"
+
+[dependencies.vecmath]
+git = "https://github.com/PistonDevelopers/vecmath"

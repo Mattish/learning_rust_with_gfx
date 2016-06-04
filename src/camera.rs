@@ -1,3 +1,5 @@
+use vecmath;
+
 pub struct Camera{
     position: [f32;3],
     up: [f32;3]
@@ -10,12 +12,8 @@ impl Camera{
         self.position[2] = position[2];
     }
 
-    pub fn get_pos(&self) -> & [f32;3]{
-        &self.position
-    }
-
-    pub fn get_view_matrix(&self, direction: &[f32; 3]) ->  [[f32; 4]; 4]{
-        view_matrix(&self.position, direction , &self.up)
+    pub fn get_view_matrix(&self, direction: [f32; 3]) ->  [[f32; 4]; 4]{
+        view_matrix_new(self.position, direction , self.up)
     }
 
     pub fn new() -> Camera{
@@ -26,37 +24,16 @@ impl Camera{
     }
 }
 
-pub fn view_matrix(position: &[f32; 3], direction: &[f32; 3], up: &[f32; 3]) -> [[f32; 4]; 4] {
-    let f = {
-        let f = direction;
-        let len = f[0] * f[0] + f[1] * f[1] + f[2] * f[2];
-        let len = len.sqrt();
-        [f[0] / len, f[1] / len, f[2] / len]
-    };
-
-    let s = [up[1] * f[2] - up[2] * f[1],
-             up[2] * f[0] - up[0] * f[2],
-             up[0] * f[1] - up[1] * f[0]];
-
-    let s_norm = {
-        let len = s[0] * s[0] + s[1] * s[1] + s[2] * s[2];
-        let len = len.sqrt();
-        [s[0] / len, s[1] / len, s[2] / len]
-    };
-
-    let u = [f[1] * s_norm[2] - f[2] * s_norm[1],
-             f[2] * s_norm[0] - f[0] * s_norm[2],
-             f[0] * s_norm[1] - f[1] * s_norm[0]];
-
-    let p = [-position[0] * s_norm[0] - position[1] * s_norm[1] - position[2] * s_norm[2],
-             -position[0] * u[0] - position[1] * u[1] - position[2] * u[2],
-             -position[0] * f[0] - position[1] * f[1] - position[2] * f[2]];
+pub fn view_matrix_new(camera_pos: [f32;3], camera_target: [f32;3], camera_up: [f32;3]) -> [[f32;4];4]{
+    let zaxis = vecmath::vec3_normalized_sub(camera_target, camera_pos);
+    let xaxis = vecmath::vec3_normalized(vecmath::vec3_cross(camera_up, zaxis));
+    let yaxis = vecmath::vec3_cross(zaxis, xaxis);
 
     [
-        [s[0], u[0], f[0], 0.0],
-        [s[1], u[1], f[1], 0.0],
-        [s[2], u[2], f[2], 0.0],
-        [p[0], p[1], p[2], 1.0],
+        [xaxis[0], yaxis[0], zaxis[0],0.0],
+        [xaxis[1], yaxis[1], zaxis[1], 0.0],
+        [xaxis[2], yaxis[2], zaxis[2], 0.0],
+        [-vecmath::vec3_dot(xaxis, camera_pos), -vecmath::vec3_dot(yaxis, camera_pos), -vecmath::vec3_dot(zaxis, camera_pos), 1.0]
     ]
 }
 

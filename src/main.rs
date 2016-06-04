@@ -2,6 +2,7 @@
 extern crate glium;
 extern crate time;
 extern crate image;
+extern crate vecmath;
 
 mod vertex;
 mod triangle;
@@ -9,6 +10,8 @@ mod shaders;
 mod camera;
 mod draw_parameters;
 mod engine;
+mod teapot;
+//mod actor;
 
 use glium::DisplayBuild;
 use glium::Surface;

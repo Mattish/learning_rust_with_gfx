@@ -5,6 +5,7 @@ dependencies = [
  "glium 0.14.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.35 (registry+https://github.com/rust-lang/crates.io-index)",
+ "vecmath 0.2.0 (git+https://github.com/PistonDevelopers/vecmath)",
 ]
 
 [[package]]
@@ -461,6 +462,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "piston-float"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
 name = "png"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -565,6 +571,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "winapi 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "winapi-build 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "vecmath"
+version = "0.2.0"
+source = "git+https://github.com/PistonDevelopers/vecmath#c0b1954c6b51f39b6840616e5d756b728cf275f0"
+dependencies = [
+ "piston-float 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

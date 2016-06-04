@@ -9,6 +9,9 @@ use std::vec::Vec;
 use camera;
 use vertex;
 use draw_parameters;
+use teapot;
+use actor;
+
 
 pub struct Engine{
     camera: Camera,
@@ -50,9 +53,9 @@ impl Engine{
     pub fn draw(&mut self){
         let mut target = self.display.draw();
 
-        target.clear_color_and_depth((0.0, 1.0, 0.5, 1.0), 1.0);
-        self.camera.set_pos(&[10.0,0.0,2.0]);
-        let view = self.camera.get_view_matrix(&[-0.000001, 0.0, 0.0]);
+        target.clear_color_and_depth((1.0, 1.0, 1.0, 0.0), 1.0);
+        self.camera.set_pos(&[10.0,10.0,0.0]);
+        let view = self.camera.get_view_matrix([-0.000001, 0.0, 0.0]);
         let (width, height) = target.get_dimensions();
         let perspective = camera::get_perspectivei(height, width);
         let uniforms = uniform! {
