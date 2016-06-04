@@ -9,17 +9,16 @@ use std::vec::Vec;
 use camera;
 use vertex;
 use draw_parameters;
-use teapot;
-use actor;
-
+use buffer_store;
+use buffer_store::BufferStore;
+//use teapot;
+//use actor;
 
 pub struct Engine{
     camera: Camera,
     display: GlutinFacade,
     program: Program,
-    pos_buffers: Vec<VertexBuffer<vertex::Vertex>>,
-    normal_buffers: Vec<VertexBuffer<vertex::Normal>>,
-    index_buffers: Vec<IndexBuffer<u16>>,
+    buffer_store: BufferStore,
 }
 
 impl Engine{
@@ -28,16 +27,14 @@ impl Engine{
             display: display,
             program: program,
             camera: Camera::new(),
-            pos_buffers: Vec::new(),
-            normal_buffers: Vec::new(),
-            index_buffers: Vec::new(),
+            buffer_store: BufferStore::new(),
         }
     }
 
     pub fn init(&mut self){
-        self.pos_buffers.push(glium::VertexBuffer::new(&self.display,&vertex::VERTICES).unwrap());
-        self.normal_buffers.push(glium::VertexBuffer::new(&self.display,&vertex::NORMALS).unwrap());
-        self.index_buffers.push(glium::IndexBuffer::new(&self.display,glium::index::PrimitiveType::TrianglesList, &vertex::INDICES).unwrap());
+        self.buffer_store.input_verticies(&self.display, &vertex::VERTICES);
+        self.buffer_store.input_normals(&self.display, &vertex::NORMALS);
+        self.buffer_store.input_indices(&self.display, &vertex::INDICES);
     }
 
     pub fn update(&self) -> bool{
@@ -71,7 +68,7 @@ impl Engine{
         };
         let params = draw_parameters::get();
 
-        target.draw((&self.pos_buffers[0],&self.normal_buffers[0]),&self.index_buffers[0],&self.program,&uniforms,&params).unwrap();
+        self.buffer_store.draw(&mut target,&self.program,&uniforms,&params);
         target.finish().unwrap();
     }
 }

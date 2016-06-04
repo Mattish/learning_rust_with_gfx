@@ -544,7 +544,7 @@ pub const VERTICES: [Vertex; 531] = [
 
 #[derive(Copy, Clone)]
 pub struct Normal {
-    normal: Vector3<f32>
+    pub normal: Vector3<f32>
 }
 
 implement_vertex!(Normal, normal);

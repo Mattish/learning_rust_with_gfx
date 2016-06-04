@@ -10,8 +10,8 @@ mod shaders;
 mod camera;
 mod draw_parameters;
 mod engine;
-mod teapot;
-//mod actor;
+mod buffer_store;
+mod wrappers;
 
 use glium::DisplayBuild;
 use glium::Surface;
