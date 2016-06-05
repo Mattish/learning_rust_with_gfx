@@ -11,6 +11,7 @@ pub struct IndexBufferWrapper {
     pub buffer: IndexBuffer<u16>,
 }
 
+#[derive(Clone,Copy)]
 pub struct IndexBufferStoreInfo {
     pub buffer_num: usize,
     pub start_index: usize,

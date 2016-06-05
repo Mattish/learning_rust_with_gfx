@@ -1,6 +1,7 @@
 pub static VERTEX_SHADER_SRC: &'static str = r#"
     #version 140
     in vec3 vertex;
+    in vec3 attr;
     out vec3 v_position;
     uniform mat4 perspective;
     uniform mat4 view;

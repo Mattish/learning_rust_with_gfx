@@ -26,9 +26,8 @@ impl Engine{
     }
 
     pub fn init(&mut self){
-        self.buffer_store.input_verticies(&self.display, &vertex::VERTICES);
-        self.buffer_store.input_attr(&self.display, &vertex::NORMALS);
-        self.buffer_store.input_indices(&self.display, &vertex::INDICES);
+        self.buffer_store.load_model(&self.display,&vertex::VERTICES,&vertex::INDICES);
+        self.buffer_store.input_attr(&self.display, &vertex::Attr{attr:[0.0,0.0,0.0]});
     }
 
     pub fn update(&self) -> bool{
