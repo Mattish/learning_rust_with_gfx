@@ -27,7 +27,7 @@ impl BufferStore {
 
     pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters)
     {
-        target.draw((&self.pos_buffers[0].buffer,self.attr_buffers[0].buffer.per_instance().unwrap()),&self.index_buffers[0].buffer,program,uniforms,params).unwrap();
+        target.draw((&self.pos_buffers[0].buffer,self.attr_buffers[0].buffer.slice(0..10000).unwrap().per_instance().unwrap()),&self.index_buffers[0].buffer,program,uniforms,params).unwrap();
     }
 
     pub fn load_model(&mut self,display: &GlutinFacade, verticies: &[vertex::Vertex], indicies: &[u16]) -> ModelInfo {
@@ -50,7 +50,7 @@ impl BufferStore {
             }
         }
 
-        let mut new_wrapper = VertexBufferWrapper::new(display,10000,self.attr_buffers.len());
+        let mut new_wrapper = VertexBufferWrapper::new(display,19562,self.attr_buffers.len());
         let store_info = new_wrapper.add(attr).unwrap();
         self.attr_buffers.push(new_wrapper);
         store_info
