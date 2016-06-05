@@ -1,6 +1,7 @@
 use glium;
 use glium::backend::glutin_backend::GlutinFacade;
 use glium::VertexBuffer;
+use glium::buffer::Content;
 
 pub struct VertexBufferWrapper<T : glium::Vertex> {
     id: usize,
@@ -17,7 +18,7 @@ pub struct VertexBufferStoreInfo {
     pub length: usize,
 }
 
-impl<T : glium::Vertex> VertexBufferWrapper<T> {
+impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
     pub fn new(display: &GlutinFacade, size: usize, id: usize) -> VertexBufferWrapper<T> {
         VertexBufferWrapper {
             id: id,
@@ -55,18 +56,17 @@ impl<T : glium::Vertex> VertexBufferWrapper<T> {
             return None;
         }
 
-        self.buffer.invalidate();
-        let mut writer_mapping = self.buffer.map_write();
+        //self.buffer.invalidate();
+
         let mut counter = self.last_index;
+        let buffer_slice = self.buffer.as_mut_slice().slice(counter..counter+array_len).unwrap();
         let store_info = VertexBufferStoreInfo {
             buffer_num: 0,
             start_index: self.last_index,
             length: array_len,
         };
-        for v in input_array.into_iter() {
-            writer_mapping.set(counter, v.clone());
-            counter = counter + 1;
-        }
+        buffer_slice.write(input_array);
+        counter = counter + array_len;
         self.remaining = self.remaining - array_len;
         self.last_index = counter;
         Some(store_info)

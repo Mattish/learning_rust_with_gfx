@@ -27,7 +27,10 @@ impl BufferStore {
 
     pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters)
     {
-        target.draw((&self.pos_buffers[0].buffer,self.attr_buffers[0].buffer.slice(0..10000).unwrap().per_instance().unwrap()),&self.index_buffers[0].buffer,program,uniforms,params).unwrap();
+        target.draw((self.pos_buffers[0].buffer.slice(0..8).unwrap(),
+                     self.attr_buffers[0].buffer.slice(0..100).unwrap().per_instance().unwrap()),
+                     &self.index_buffers[0].buffer.slice(0..36).unwrap(),
+                     program,uniforms,params).unwrap();
     }
 
     pub fn load_model(&mut self,display: &GlutinFacade, verticies: &[vertex::Vertex], indicies: &[u16]) -> ModelInfo {
@@ -52,6 +55,20 @@ impl BufferStore {
 
         let mut new_wrapper = VertexBufferWrapper::new(display,19562,self.attr_buffers.len());
         let store_info = new_wrapper.add(attr).unwrap();
+        self.attr_buffers.push(new_wrapper);
+        store_info
+    }
+
+    pub fn input_attr_range(&mut self,display: &GlutinFacade, attr: &[vertex::Attr]) -> VertexBufferStoreInfo {
+        for wrapper in self.attr_buffers.iter_mut() {
+            match wrapper.add_range(attr) {
+                Some(store_info) => return store_info,
+                _ => {}
+            }
+        }
+
+        let mut new_wrapper = VertexBufferWrapper::new(display,19562,self.attr_buffers.len());
+        let store_info = new_wrapper.add_range(attr).unwrap();
         self.attr_buffers.push(new_wrapper);
         store_info
     }

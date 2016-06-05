@@ -1,3 +1,4 @@
+use time::{Duration, PreciseTime};
 use glium;
 use glium::Program;
 use glium::Surface;
@@ -7,6 +8,7 @@ use camera;
 use vertex;
 use draw_parameters;
 use buffer_store::BufferStore;
+use models;
 
 pub struct Engine{
     camera: Camera,
@@ -26,13 +28,20 @@ impl Engine{
     }
 
     pub fn init(&mut self){
-        self.buffer_store.load_model(&self.display,&vertex::VERTICES,&vertex::INDICES);
-        for x in -50..50 {
-            for z in -50..50 {
-                self.buffer_store.input_attr(&self.display, &vertex::Attr{attr:[x as f32,0.0,z as f32]});
+        println!("init start.");
+        let start = PreciseTime::now();
+        self.buffer_store.load_model(&self.display,&models::cube::VERTICES,&models::cube::INDICES);
+        let mut attrs :[vertex::Attr;100] = [vertex::Attr{attr:[0.0,0.0,0.0]};100];
+        let mut counter = 0;
+        for x in -5..5 {
+            for z in -5..5 {
+                attrs[counter] = vertex::Attr{attr:[x as f32,0.0001,z as f32]};
+                counter = counter + 1;
             }
         }
-
+        self.buffer_store.input_attr_range(&self.display, &attrs);
+        let finish = start.to(PreciseTime::now());
+        println!("init end took:{}ms.",finish.num_milliseconds());
     }
 
     pub fn update(&self) -> bool{

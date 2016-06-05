@@ -12,6 +12,7 @@ mod draw_parameters;
 mod engine;
 mod buffer_store;
 mod wrappers;
+mod models;
 
 use glium::DisplayBuild;
 use glium::Surface;
