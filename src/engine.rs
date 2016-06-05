@@ -27,7 +27,12 @@ impl Engine{
 
     pub fn init(&mut self){
         self.buffer_store.load_model(&self.display,&vertex::VERTICES,&vertex::INDICES);
-        self.buffer_store.input_attr(&self.display, &vertex::Attr{attr:[0.0,0.0,0.0]});
+        for x in -50..50 {
+            for z in -50..50 {
+                self.buffer_store.input_attr(&self.display, &vertex::Attr{attr:[x as f32,0.0,z as f32]});
+            }
+        }
+
     }
 
     pub fn update(&self) -> bool{
@@ -44,17 +49,11 @@ impl Engine{
         let mut target = self.display.draw();
 
         target.clear_color_and_depth((1.0, 1.0, 1.0, 0.0), 1.0);
-        self.camera.set_pos(&[2.0,2.0,2.0]);
+        self.camera.set_pos(&[20.0,20.0,20.0]);
         let view = self.camera.get_view_matrix([-0.000001, 0.0, 0.0]);
         let (width, height) = target.get_dimensions();
         let perspective = camera::get_perspectivei(height, width);
         let uniforms = uniform! {
-            model: [
-                [0.01, 0.0, 0.0, 0.0],
-                [0.0, 0.01, 0.0, 0.0],
-                [0.0, 0.0, 0.01, 0.0],
-                [0.0, 0.0, 0.0, 1.0f32]
-            ],
             u_light: [1.0, -0.4, 0.9f32],
             perspective: perspective,
             view: view

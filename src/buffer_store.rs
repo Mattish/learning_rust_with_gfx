@@ -50,7 +50,7 @@ impl BufferStore {
             }
         }
 
-        let mut new_wrapper = VertexBufferWrapper::new(display,8096,self.attr_buffers.len());
+        let mut new_wrapper = VertexBufferWrapper::new(display,10000,self.attr_buffers.len());
         let store_info = new_wrapper.add(attr).unwrap();
         self.attr_buffers.push(new_wrapper);
         store_info

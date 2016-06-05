@@ -5,9 +5,14 @@ pub static VERTEX_SHADER_SRC: &'static str = r#"
     out vec3 v_position;
     uniform mat4 perspective;
     uniform mat4 view;
-    uniform mat4 model;
     void main() {
-        mat4 modelview = view * model;
+        mat4 new_model;
+        new_model[0] = vec4(0.005,0.0,  0.0,  0.0);
+        new_model[1] = vec4(0.0,  0.005,0.0,  0.0);
+        new_model[2] = vec4(0.0,  0.0,  0.005,0.0);
+        new_model[3] = vec4(attr,1.0f);
+        mat4 modelview = view * new_model;
+
         gl_Position = perspective * modelview * vec4(vertex, 1.0);
         v_position = gl_Position.xyz / gl_Position.w;
     }
