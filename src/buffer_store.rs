@@ -10,43 +10,63 @@ use wrappers::*;
 
 pub struct BufferStore {
     pos_buffers: Vec<VertexBufferWrapper<vertex::Vertex>>,
-    attr_buffers: Vec<VertexBufferWrapper<vertex::Attr>>,
+    instance_pos_buffers: Vec<VertexBufferWrapper<vertex::Attr>>,
     index_buffers: Vec<IndexBufferWrapper>,
-    models: HashMap<usize,ModelInfo>
+    models: HashMap<String,ModelInfo>
 }
 
 impl BufferStore {
     pub fn new() -> BufferStore {
         BufferStore {
             pos_buffers: Vec::new(),
-            attr_buffers: Vec::new(),
+            instance_pos_buffers: Vec::new(),
             index_buffers: Vec::new(),
             models: HashMap::new(),
         }
     }
 
-    pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters)
+    // pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters)
+    // {
+    //     target.draw((self.pos_buffers[0].buffer.slice(0..36).unwrap(),
+    //                  self.instance_pos_buffers[0].buffer.slice(0..100).unwrap().per_instance().unwrap()),
+    //                  &self.index_buffers[0].buffer.slice(0..36).unwrap(),
+    //                  program,uniforms,params).unwrap();
+    // }
+
+    pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters, model_name: &str)
     {
-        target.draw((self.pos_buffers[0].buffer.slice(0..36).unwrap(),
-                     self.attr_buffers[0].buffer.slice(0..100).unwrap().per_instance().unwrap()),
-                     &self.index_buffers[0].buffer.slice(0..36).unwrap(),
-                     program,uniforms,params).unwrap();
+        match self.models.get(model_name){
+            Some(model) => {
+                            let vertex_start = model.model_buffer_info.start_index;
+                            let vertex_end = model.model_buffer_info.start_index + model.model_buffer_info.length;
+                            let index_start = model.index_buffer_info.start_index;
+                            let index_end = model.index_buffer_info.start_index + model.index_buffer_info.length;
+                            target.draw((
+                                self.pos_buffers[0].buffer.slice(vertex_start..vertex_end).unwrap(),
+                                self.instance_pos_buffers[0].buffer.slice(0..100).unwrap().per_instance().unwrap()),
+                                &self.index_buffers[0].buffer.slice(index_start..index_end).unwrap(),
+                                program,
+                                uniforms,
+                                params).unwrap();
+                     }
+            _ => {}
+        };
     }
 
-    pub fn load_model(&mut self,display: &GlutinFacade, verticies: &[vertex::Vertex], indicies: &[u16]) -> ModelInfo {
+    pub fn load_model(&mut self,display: &GlutinFacade, name: &str, verticies: &[vertex::Vertex], indicies: &[u16]) -> ModelInfo {
         let vertex_info = self.input_verticies(display,verticies);
         let index_info = self.input_indices(display, indicies);
         let model_info = ModelInfo{
             id: self.models.len(),
             model_buffer_info: vertex_info,
-            index_buffer_indo: index_info,
+            index_buffer_info: index_info,
         };
-        self.models.insert(model_info.id,model_info);
+        self.models.insert(name.to_string(),model_info);
         model_info
     }
 
     pub fn input_attr_range(&mut self,display: &GlutinFacade, attr: &[vertex::Attr]) -> VertexBufferStoreInfo {
-        for wrapper in self.attr_buffers.iter_mut() {
+        for wrapper in self.instance_pos_buffers.iter_mut() {
             match wrapper.add(attr) {
                 Some(store_info) => return store_info,
                 _ => {}
@@ -55,7 +75,7 @@ impl BufferStore {
 
         let mut new_wrapper = VertexBufferWrapper::new(display,19562);
         let store_info = new_wrapper.add(attr).unwrap();
-        self.attr_buffers.push(new_wrapper);
+        self.instance_pos_buffers.push(new_wrapper);
         store_info
     }
 
@@ -92,5 +112,5 @@ impl BufferStore {
 pub struct ModelInfo{
     id: usize,
     model_buffer_info: VertexBufferStoreInfo,
-    index_buffer_indo: IndexBufferStoreInfo,
+    index_buffer_info: IndexBufferStoreInfo,
 }
