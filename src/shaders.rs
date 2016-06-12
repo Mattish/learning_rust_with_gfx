@@ -4,12 +4,12 @@ pub static VERTEX_SHADER_SRC: &'static str = r#"
     in vec3 attr;
     out vec3 v_position;
     uniform mat4 perspective;
-    uniform mat4 view;
+    uniform mat4 view; 
     void main() {
         mat4 new_model;
-        new_model[0] = vec4(0.25,0.0,  0.0,  0.0);
-        new_model[1] = vec4(0.0,  0.25,0.0,  0.0);
-        new_model[2] = vec4(0.0,  0.0,  0.25,0.0);
+        new_model[0] = vec4(0.5,  0.0,  0.0,  0.0);
+        new_model[1] = vec4(0.0,  0.5,  0.0,  0.0);
+        new_model[2] = vec4(0.0,  0.0,  0.5,  0.0);
         new_model[3] = vec4(attr,1.0f);
         mat4 modelview = view * new_model;
 

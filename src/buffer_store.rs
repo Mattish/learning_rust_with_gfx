@@ -27,7 +27,7 @@ impl BufferStore {
 
     pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters)
     {
-        target.draw((self.pos_buffers[0].buffer.slice(0..8).unwrap(),
+        target.draw((self.pos_buffers[0].buffer.slice(0..36).unwrap(),
                      self.attr_buffers[0].buffer.slice(0..100).unwrap().per_instance().unwrap()),
                      &self.index_buffers[0].buffer.slice(0..36).unwrap(),
                      program,uniforms,params).unwrap();
@@ -45,44 +45,30 @@ impl BufferStore {
         model_info
     }
 
-    pub fn input_attr(&mut self,display: &GlutinFacade, attr: &vertex::Attr) -> VertexBufferStoreInfo {
-        for wrapper in self.attr_buffers.iter_mut() {
-            match wrapper.add(&attr) {
-                Some(store_info) => return store_info,
-                _ => {}
-            }
-        }
-
-        let mut new_wrapper = VertexBufferWrapper::new(display,19562,self.attr_buffers.len());
-        let store_info = new_wrapper.add(attr).unwrap();
-        self.attr_buffers.push(new_wrapper);
-        store_info
-    }
-
     pub fn input_attr_range(&mut self,display: &GlutinFacade, attr: &[vertex::Attr]) -> VertexBufferStoreInfo {
         for wrapper in self.attr_buffers.iter_mut() {
-            match wrapper.add_range(attr) {
+            match wrapper.add(attr) {
                 Some(store_info) => return store_info,
                 _ => {}
             }
         }
 
-        let mut new_wrapper = VertexBufferWrapper::new(display,19562,self.attr_buffers.len());
-        let store_info = new_wrapper.add_range(attr).unwrap();
+        let mut new_wrapper = VertexBufferWrapper::new(display,19562);
+        let store_info = new_wrapper.add(attr).unwrap();
         self.attr_buffers.push(new_wrapper);
         store_info
     }
 
     fn input_verticies(&mut self,display: &GlutinFacade, input_array: &[vertex::Vertex]) -> VertexBufferStoreInfo {
         for wrapper in self.pos_buffers.iter_mut() {
-            match wrapper.add_range(input_array) {
+            match wrapper.add(input_array) {
                 Some(store_info) => return store_info,
                 _ => {}
             }
         }
 
-        let mut new_wrapper = VertexBufferWrapper::new(display,8096,self.pos_buffers.len());
-        let store_info = new_wrapper.add_range(input_array).unwrap();
+        let mut new_wrapper = VertexBufferWrapper::new(display,8096);
+        let store_info = new_wrapper.add(input_array).unwrap();
         self.pos_buffers.push(new_wrapper);
         store_info
     }
@@ -95,7 +81,7 @@ impl BufferStore {
             }
         }
 
-        let mut new_wrapper = IndexBufferWrapper::new(display,8096,self.index_buffers.len());
+        let mut new_wrapper = IndexBufferWrapper::new(display,8096);
         let store_info = new_wrapper.add(input_array).unwrap();
         self.index_buffers.push(new_wrapper);
         store_info

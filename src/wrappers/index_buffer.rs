@@ -1,12 +1,9 @@
-use vertex;
 use glium;
 use glium::backend::glutin_backend::GlutinFacade;
 use glium::IndexBuffer;
 
 pub struct IndexBufferWrapper {
-    id: usize,
-    total: usize,
-    remaining: usize,
+    remaining: usize, 
     last_index: usize,
     pub buffer: IndexBuffer<u16>,
 }
@@ -19,10 +16,8 @@ pub struct IndexBufferStoreInfo {
 }
 
 impl IndexBufferWrapper {
-    pub fn new(display: &GlutinFacade, size: usize, id: usize) -> IndexBufferWrapper {
+    pub fn new(display: &GlutinFacade, size: usize) -> IndexBufferWrapper {
         IndexBufferWrapper {
-            id: id,
-            total: size,
             remaining: size,
             last_index: 0,
             buffer: glium::IndexBuffer::empty_dynamic(display, glium::index::PrimitiveType::TrianglesList, size).unwrap(),

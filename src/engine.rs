@@ -1,4 +1,4 @@
-use time::{Duration, PreciseTime};
+use time::PreciseTime;
 use glium;
 use glium::Program;
 use glium::Surface;
@@ -30,7 +30,15 @@ impl Engine{
     pub fn init(&mut self){
         println!("init start.");
         let start = PreciseTime::now();
-        self.buffer_store.load_model(&self.display,&models::cube::VERTICES,&models::cube::INDICES);
+
+        let cube = models::obj_loader::load_obj_vertices();
+        let mut indices = Vec::new();
+        for i in 0u16..cube.len() as u16 {
+            indices.push(i);
+        }
+
+        self.buffer_store.load_model(&self.display,&cube,&indices);
+
         let mut attrs :[vertex::Attr;100] = [vertex::Attr{attr:[0.0,0.0,0.0]};100];
         let mut counter = 0;
         for x in -5..5 {
@@ -58,7 +66,7 @@ impl Engine{
         let mut target = self.display.draw();
 
         target.clear_color_and_depth((1.0, 1.0, 1.0, 0.0), 1.0);
-        self.camera.set_pos(&[20.0,20.0,20.0]);
+        self.camera.set_pos(&[10.0,10.0,10.0]);
         let view = self.camera.get_view_matrix([-0.000001, 0.0, 0.0]);
         let (width, height) = target.get_dimensions();
         let perspective = camera::get_perspectivei(height, width);

@@ -1,2 +1,2 @@
-pub mod teapot;
-pub mod cube;
+//pub mod teapot;
+pub mod obj_loader;

@@ -3,6 +3,7 @@ extern crate glium;
 extern crate time;
 extern crate image;
 extern crate vecmath;
+extern crate obj;
 
 mod vertex;
 mod triangle;
