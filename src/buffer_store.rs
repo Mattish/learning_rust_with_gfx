@@ -73,7 +73,7 @@ impl BufferStore {
             }
         }
 
-        let mut new_wrapper = VertexBufferWrapper::new(display,48000);
+        let mut new_wrapper = VertexBufferWrapper::new(display,100);
         let store_info = new_wrapper.add(attr).unwrap();
         self.instance_pos_buffers.push(new_wrapper);
         store_info
@@ -87,7 +87,7 @@ impl BufferStore {
             }
         }
 
-        let mut new_wrapper = VertexBufferWrapper::new(display,48000);
+        let mut new_wrapper = VertexBufferWrapper::new(display,47112);
         let store_info = new_wrapper.add(input_array).unwrap();
         self.pos_buffers.push(new_wrapper);
         store_info
@@ -101,7 +101,7 @@ impl BufferStore {
             }
         }
 
-        let mut new_wrapper = IndexBufferWrapper::new(display,48000);
+        let mut new_wrapper = IndexBufferWrapper::new(display,47112);
         let store_info = new_wrapper.add(input_array).unwrap();
         self.index_buffers.push(new_wrapper);
         store_info
