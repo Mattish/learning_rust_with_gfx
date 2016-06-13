@@ -4,7 +4,7 @@ use std::fs::File;
 use obj;
 
 pub fn load_obj_vertices() -> Vec<vertex::Vertex>{
-    let f = File::open("cube.obj").unwrap();
+    let f = File::open("teapot.obj").unwrap();
     let reader = BufReader::new(f);
     let loaded_obj: obj::Obj = obj::load_obj(reader).unwrap();
 

@@ -37,7 +37,7 @@ impl Engine{
             indices.push(i);
         }
 
-        self.buffer_store.load_model(&self.display,"cube", &cube,&indices);
+        self.buffer_store.load_model(&self.display,"teapot", &cube,&indices);
 
         let mut attrs :[vertex::Attr;100] = [vertex::Attr{attr:[0.0,0.0,0.0]};100];
         let mut counter = 0;
@@ -77,7 +77,7 @@ impl Engine{
         };
         let params = draw_parameters::get();
 
-        self.buffer_store.draw(&mut target,&self.program,&uniforms,&params,"cube");
+        self.buffer_store.draw(&mut target,&self.program,&uniforms,&params,"teapot");
         target.finish().unwrap();
     }
 }
