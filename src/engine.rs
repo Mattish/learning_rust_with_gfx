@@ -12,7 +12,7 @@ use models;
 use std;
 use std::f64;
 
-pub struct Engine{
+pub struct Engine {
     camera: Camera,
     display: GlutinFacade,
     program: Program,
@@ -21,9 +21,9 @@ pub struct Engine{
     frame_step_total: f64,
 }
 
-impl Engine{
-    pub fn new(display: GlutinFacade, program: Program) -> Engine{
-        Engine{
+impl Engine {
+    pub fn new(display: GlutinFacade, program: Program) -> Engine {
+        Engine {
             display: display,
             program: program,
             camera: Camera::new(),
@@ -33,7 +33,7 @@ impl Engine{
         }
     }
 
-    pub fn init(&mut self){
+    pub fn init(&mut self) {
         println!("init start.");
         let start = PreciseTime::now();
 
@@ -43,23 +43,36 @@ impl Engine{
             indices.push(i);
         }
 
-        self.buffer_store.load_model(&self.display,"cube", &cube,&indices);
+        self.buffer_store.load_model(&self.display, "cube", &cube, &indices);
 
-        let mut attrs :[vertex::Attr;100] = [vertex::Attr{attr:[0.0,0.0,0.0]};100];
+        let mut attrs: [vertex::Attr; 100] = [vertex::Attr { attr: [0.0, 0.0, 0.0] }; 100];
         let mut counter = 0;
         for x in -5..5 {
             for z in -5..5 {
-                attrs[counter] = vertex::Attr{attr:[x as f32,0.0001,z as f32]};
+                attrs[counter] = vertex::Attr { attr: [x as f32, 0.0001, z as f32] };
                 counter = counter + 1;
             }
         }
         self.buffer_store.input_attr_range(&self.display, &attrs);
+        self.buffer_store.update_attr(4,vertex::Attr { attr: [2.0, 2.0, 2.0] });
         let finish = start.to(PreciseTime::now());
-        println!("init end took:{}ms.",finish.num_milliseconds());
-        self.camera.set(2.0,2.0,2.0);
+        println!("init end took:{}ms.", finish.num_milliseconds());
+        self.camera.set(2.0, 2.0, 2.0);
     }
 
-    pub fn update(&self, delta: f64) -> bool{
+    pub fn update(&mut self, delta: f64) -> bool {
+
+        let frame_step: f64 = (std::f64::consts::PI * 1.0) / 60.0;
+        let frame_step_w_delta = frame_step * delta;
+        self.frame_step_total = self.frame_step_total + frame_step_w_delta;
+        let frame_count_cos = self.frame_step_total.cos();
+        let frame_count_sin = self.frame_step_total.sin();
+        let frame_count_sin_off = (self.frame_step_total / 1.3).sin();
+
+        self.camera.set(frame_count_cos as f32 * 8.0,
+                        frame_count_sin as f32 * 8.0,
+                        frame_count_sin_off as f32 * 8.0);
+
         for ev in self.display.poll_events() {
             match ev {
                 glium::glutin::Event::Closed => return true,
@@ -69,20 +82,11 @@ impl Engine{
         return false;
     }
 
-    pub fn draw(&mut self, delta: f64){
+    pub fn draw(&mut self) {
         let mut target = self.display.draw();
-        
-        let frame_step: f64 = (std::f64::consts::PI * 1.0) / 60.0;
-        let frame_step_w_delta = frame_step * delta;
-        self.frame_step_total = self.frame_step_total + frame_step_w_delta;
-        let frame_count_cos = self.frame_step_total.cos();
-        let frame_count_sin = self.frame_step_total.sin();
-        let frame_count_sin_off = (self.frame_step_total/ 1.3 ).sin();
-
-        self.camera.set(frame_count_cos as f32  * 8.0, frame_count_sin as f32  * 8.0, frame_count_sin_off as f32 * 8.0);
 
         target.clear_color_and_depth((1.0, 1.0, 1.0, 0.0), 1.0);
-        
+
         let view = self.camera.get_view_matrix([0.0, 0.0, 0.0]);
         let (width, height) = target.get_dimensions();
         let perspective = camera::get_perspectivei(height, width);
@@ -93,9 +97,9 @@ impl Engine{
         };
         let params = draw_parameters::get();
 
-        self.buffer_store.draw(&mut target,&self.program,&uniforms,&params,"cube");
+        self.buffer_store.draw(&mut target, &self.program, &uniforms, &params, "cube");
         target.finish().unwrap();
 
-        self.frame_count = self.frame_count + 1; 
+        self.frame_count = self.frame_count + 1;
     }
 }

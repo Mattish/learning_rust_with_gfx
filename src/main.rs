@@ -52,7 +52,7 @@ fn main() {
         if engine.update(frame_took_delta){
             return
         }
-        engine.draw(frame_took_delta);
+        engine.draw();
 
         let mut frame_took = frame_limit_last.to(PreciseTime::now());
         let mut frame_took_nano = frame_took.num_nanoseconds().unwrap() as f64;        
@@ -70,5 +70,6 @@ fn main() {
         }
 
         frame_delta_total += frame_took_delta;
+        
     }
 }

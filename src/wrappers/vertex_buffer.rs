@@ -33,7 +33,7 @@ impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
         //self.buffer.invalidate();
 
         let mut counter = self.last_index;
-        let buffer_slice = self.buffer.as_mut_slice().slice(counter..counter+array_len).unwrap();
+        let buffer_slice = self.buffer.slice_mut(counter..counter+array_len).unwrap();
         let store_info = VertexBufferStoreInfo {
             buffer_num: 0,
             start_index: self.last_index,
@@ -44,5 +44,10 @@ impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
         self.remaining = self.remaining - array_len;
         self.last_index = counter;
         Some(store_info)
+    }
+
+    pub fn update(&mut self, index: usize, input: T){
+        let mut buffer_slice = self.buffer.slice_mut(index..index+1).unwrap().map_write(); // Unsure if this is faster then just assigning array
+        buffer_slice.set(0, input); // We'll probably never want to just change a single value normally
     }
 }

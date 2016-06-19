@@ -79,6 +79,10 @@ impl BufferStore {
         store_info
     }
 
+    pub fn update_attr(&mut self, index: usize, value: vertex::Attr){
+        self.instance_pos_buffers[0].update(index,value);
+    }
+
     fn input_verticies(&mut self,display: &GlutinFacade, input_array: &[vertex::Vertex]) -> VertexBufferStoreInfo {
         for wrapper in self.pos_buffers.iter_mut() {
             match wrapper.add(input_array) {
