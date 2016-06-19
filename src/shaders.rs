@@ -6,10 +6,13 @@ pub static VERTEX_SHADER_SRC: &'static str = r#"
     uniform mat4 perspective;
     uniform mat4 view; 
     void main() {
+
+        float scale = 0.55;
+
         mat4 new_model;
-        new_model[0] = vec4(1.0,  0.0,  0.0,  0.0);
-        new_model[1] = vec4(0.0,  1.0,  0.0,  0.0);
-        new_model[2] = vec4(0.0,  0.0,  1.0,  0.0);
+        new_model[0] = vec4(scale,  0.0,  0.0,  0.0);
+        new_model[1] = vec4(0.0,  scale,  0.0,  0.0);
+        new_model[2] = vec4(0.0,  0.0,  scale,  0.0);
         new_model[3] = vec4(attr,1.0f);
         mat4 modelview = view * new_model;
 

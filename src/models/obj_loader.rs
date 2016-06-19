@@ -3,8 +3,8 @@ use std::io::BufReader;
 use std::fs::File;
 use obj;
 
-pub fn load_obj_vertices() -> Vec<vertex::Vertex>{
-    let f = File::open("teapot.obj").unwrap();
+pub fn load_obj_vertices(name: &'static str) -> Vec<vertex::Vertex>{
+    let f = File::open(name).unwrap();
     let reader = BufReader::new(f);
     let loaded_obj: obj::Obj = obj::load_obj(reader).unwrap();
 
