@@ -29,7 +29,6 @@ fn main() {
     let program = glium::Program::from_source(&display, shaders::VERTEX_SHADER_SRC, shaders::FRAGMENT_SHADER_SRC,None).unwrap();
     let mut engine = engine::Engine::new(display,program);
     engine.init();
-    //let image = image::load(Cursor::new(&include_bytes!("../1368397855550.jpg")[..]),image::JPEG).unwrap().to_rgba();
     //let image_dimensions = image.dimensions();
     //let image = glium::texture::RawImage2d::from_raw_rgba_reversed(image.into_raw(), image_dimensions);
     //let texture = glium::texture::Texture2d::new(&display, image).unwrap();
