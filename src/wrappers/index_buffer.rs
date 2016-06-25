@@ -6,6 +6,7 @@ pub struct IndexBufferWrapper {
     remaining: usize, 
     last_index: usize,
     pub buffer: IndexBuffer<u16>,
+    buffer_num: usize,
 }
 
 #[derive(Clone,Copy)]
@@ -16,11 +17,12 @@ pub struct IndexBufferStoreInfo {
 }
 
 impl IndexBufferWrapper {
-    pub fn new(display: &GlutinFacade, size: usize) -> IndexBufferWrapper {
+    pub fn new(display: &GlutinFacade, size: usize, buffer_num: usize) -> IndexBufferWrapper {
         IndexBufferWrapper {
             remaining: size,
             last_index: 0,
             buffer: glium::IndexBuffer::empty_dynamic(display, glium::index::PrimitiveType::TrianglesList, size).unwrap(),
+            buffer_num: buffer_num
         }
     }
 
@@ -34,7 +36,7 @@ impl IndexBufferWrapper {
         let mut writer_mapping = self.buffer.map_write();
         let mut counter = self.last_index;
         let store_info = IndexBufferStoreInfo {
-            buffer_num: 0,
+            buffer_num: self.buffer_num,
             start_index: self.last_index,
             length: array_len,
         };

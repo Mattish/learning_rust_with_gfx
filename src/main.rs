@@ -4,6 +4,7 @@ extern crate time;
 extern crate image;
 extern crate vecmath;
 extern crate obj;
+extern crate rand;
 
 mod vertex;
 mod shaders;

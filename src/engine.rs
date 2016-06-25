@@ -11,6 +11,8 @@ use buffer_store::BufferStore;
 use models;
 use std;
 use std::f64;
+use rand::Rng;
+use rand;
 
 pub struct Engine {
     camera: Camera,
@@ -45,15 +47,19 @@ impl Engine {
 
         self.buffer_store.load_model(&self.display, "cube", &model_vertices, &indices);
 
-        let mut attrs: [vertex::Attr; 100] = [vertex::Attr { attr: [0.0, 0.0, 0.0],scale:1.0,colour:[1.0,0.0,0.0] }; 100];
+        let mut rng = rand::thread_rng();
+        let mut attrs_one = Vec::new();
+        let mut attrs_two = Vec::new();
         let mut counter = 0;
-        for x in -5..5 {
-            for z in -5..5 {
-                attrs[counter] = vertex::Attr { attr: [x as f32, 0.0001, z as f32],scale:0.65,colour:[0.6,0.5,0.3] };
+        for x in -250..250 {
+            for z in -250..250 {
+                attrs_one.push(vertex::Attr { attr: [x as f32, 0.0001, z as f32],scale:0.65,colour:[rng.gen::<f32>(),rng.gen::<f32>(),rng.gen::<f32>()] });
+                attrs_two.push(vertex::Attr { attr: [(x as f32) + 0.5, 1.0001, (z as f32) + 0.5],scale:0.65,colour:[rng.gen::<f32>(),rng.gen::<f32>(),rng.gen::<f32>()] });
                 counter = counter + 1;
             }
         }
-        self.buffer_store.input_attr_range(&self.display, &attrs);
+        self.buffer_store.input_attr_range(&self.display, &attrs_one, "cube");
+        self.buffer_store.input_attr_range(&self.display, &attrs_two, "cube");
         self.buffer_store.update_attr(4,vertex::Attr { attr: [2.0, 2.0, 2.0],scale:2.0,colour:[1.0,1.0,0.0] });
         let finish = start.to(PreciseTime::now());
         println!("init end took:{}ms.", finish.num_milliseconds());
@@ -69,9 +75,9 @@ impl Engine {
         let frame_count_sin = self.frame_step_total.sin();
         let frame_count_sin_off = (self.frame_step_total / 1.3).sin();
 
-        self.camera.set(frame_count_cos as f32 * 8.0,
-                        frame_count_sin as f32 * 8.0,
-                        frame_count_sin_off as f32 * 8.0);
+        self.camera.set(frame_count_cos as f32 * 20.0,
+                        frame_count_sin as f32 * 20.0,
+                        frame_count_sin_off as f32 * 20.0);
 
         for ev in self.display.poll_events() {
             match ev {
