@@ -9,7 +9,7 @@ use glium::DrawParameters;
 use wrappers::*;
 
 pub struct BufferStore {
-    pos_buffers: Vec<VertexBufferWrapper<vertex::Vertex>>,
+    vertex_buffers: Vec<VertexBufferWrapper<vertex::Vertex>>,
     instance_pos_buffers: Vec<VertexBufferWrapper<vertex::Attr>>,
     index_buffers: Vec<IndexBufferWrapper>,
     models: HashMap<String,ModelInfo>
@@ -18,7 +18,7 @@ pub struct BufferStore {
 impl BufferStore {
     pub fn new() -> BufferStore {
         BufferStore {
-            pos_buffers: Vec::new(),
+            vertex_buffers: Vec::new(),
             instance_pos_buffers: Vec::new(),
             index_buffers: Vec::new(),
             models: HashMap::new(),
@@ -27,7 +27,7 @@ impl BufferStore {
 
     // pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters)
     // {
-    //     target.draw((self.pos_buffers[0].buffer.slice(0..36).unwrap(),
+    //     target.draw((self.vertex_buffers[0].buffer.slice(0..36).unwrap(),
     //                  self.instance_pos_buffers[0].buffer.slice(0..100).unwrap().per_instance().unwrap()),
     //                  &self.index_buffers[0].buffer.slice(0..36).unwrap(),
     //                  program,uniforms,params).unwrap();
@@ -42,7 +42,7 @@ impl BufferStore {
                             let index_start = model.index_buffer_info.start_index;
                             let index_end = model.index_buffer_info.start_index + model.index_buffer_info.length;
                             target.draw((
-                                self.pos_buffers[0].buffer.slice(vertex_start..vertex_end).unwrap(),
+                                self.vertex_buffers[0].buffer.slice(vertex_start..vertex_end).unwrap(),
                                 self.instance_pos_buffers[0].buffer.slice(0..100).unwrap().per_instance().unwrap()),
                                 &self.index_buffers[0].buffer.slice(index_start..index_end).unwrap(),
                                 program,
@@ -53,7 +53,10 @@ impl BufferStore {
         };
     }
 
-    pub fn load_model(&mut self,display: &GlutinFacade, name: &str, verticies: &[vertex::Vertex], indicies: &[u16]) -> ModelInfo {
+    pub fn load_model(&mut self,display: &GlutinFacade, name: &str, 
+                        verticies: &[vertex::Vertex],
+                        indicies: &[u16]) 
+                        -> ModelInfo {
         let vertex_info = self.input_verticies(display,verticies);
         let index_info = self.input_indices(display, indicies);
         let model_info = ModelInfo{
@@ -84,7 +87,7 @@ impl BufferStore {
     }
 
     fn input_verticies(&mut self,display: &GlutinFacade, input_array: &[vertex::Vertex]) -> VertexBufferStoreInfo {
-        for wrapper in self.pos_buffers.iter_mut() {
+        for wrapper in self.vertex_buffers.iter_mut() {
             match wrapper.add(input_array) {
                 Some(store_info) => return store_info,
                 _ => {}
@@ -93,7 +96,7 @@ impl BufferStore {
 
         let mut new_wrapper = VertexBufferWrapper::new(display,47112);
         let store_info = new_wrapper.add(input_array).unwrap();
-        self.pos_buffers.push(new_wrapper);
+        self.vertex_buffers.push(new_wrapper);
         store_info
     }
 

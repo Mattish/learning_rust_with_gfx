@@ -37,24 +37,24 @@ impl Engine {
         println!("init start.");
         let start = PreciseTime::now();
 
-        let cube = models::obj_loader::load_obj_vertices("cube.obj");
+        let model_vertices = models::obj_loader::load_obj_vertices("cube.obj");
         let mut indices = Vec::new();
-        for i in 0u16..cube.len() as u16 {
+        for i in 0u16..model_vertices.len() as u16 {
             indices.push(i);
         }
 
-        self.buffer_store.load_model(&self.display, "cube", &cube, &indices);
+        self.buffer_store.load_model(&self.display, "cube", &model_vertices, &indices);
 
-        let mut attrs: [vertex::Attr; 100] = [vertex::Attr { attr: [0.0, 0.0, 0.0] }; 100];
+        let mut attrs: [vertex::Attr; 100] = [vertex::Attr { attr: [0.0, 0.0, 0.0],scale:1.0,colour:[1.0,0.0,0.0] }; 100];
         let mut counter = 0;
         for x in -5..5 {
             for z in -5..5 {
-                attrs[counter] = vertex::Attr { attr: [x as f32, 0.0001, z as f32] };
+                attrs[counter] = vertex::Attr { attr: [x as f32, 0.0001, z as f32],scale:0.65,colour:[0.6,0.5,0.3] };
                 counter = counter + 1;
             }
         }
         self.buffer_store.input_attr_range(&self.display, &attrs);
-        self.buffer_store.update_attr(4,vertex::Attr { attr: [2.0, 2.0, 2.0] });
+        self.buffer_store.update_attr(4,vertex::Attr { attr: [2.0, 2.0, 2.0],scale:2.0,colour:[1.0,1.0,0.0] });
         let finish = start.to(PreciseTime::now());
         println!("init end took:{}ms.", finish.num_milliseconds());
         self.camera.set(2.0, 2.0, 2.0);
@@ -62,7 +62,7 @@ impl Engine {
 
     pub fn update(&mut self, delta: f64) -> bool {
 
-        let frame_step: f64 = (std::f64::consts::PI * 1.0) / 60.0;
+        let frame_step: f64 = (std::f64::consts::PI * 1.0) / 600.0;
         let frame_step_w_delta = frame_step * delta;
         self.frame_step_total = self.frame_step_total + frame_step_w_delta;
         let frame_count_cos = self.frame_step_total.cos();
