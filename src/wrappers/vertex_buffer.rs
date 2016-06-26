@@ -16,6 +16,12 @@ pub struct VertexBufferStoreInfo {
     pub length: usize,
 }
 
+pub struct AttrUpdate<T : glium::Vertex>{
+    pub index: usize,
+    pub buffer_num: usize,
+    pub attr: T,
+}
+
 impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
     pub fn new(display: &GlutinFacade, size: usize, buffer_num: usize) -> VertexBufferWrapper<T> {
         VertexBufferWrapper {
@@ -32,8 +38,6 @@ impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
             return None;
         }
 
-        //self.buffer.invalidate();
-
         let mut counter = self.last_index;
         let buffer_slice = self.buffer.slice_mut(counter..counter+array_len).unwrap();
         let store_info = VertexBufferStoreInfo {
@@ -48,8 +52,12 @@ impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
         Some(store_info)
     }
 
-    pub fn update(&mut self, index: usize, input: T){
-        let mut buffer_slice = self.buffer.slice_mut(index..index+1).unwrap().map_write(); // Unsure if this is faster then just assigning array
-        buffer_slice.set(0, input); // We'll probably never want to just change a single value normally
+    pub fn update_many(&mut self, inputs: &[AttrUpdate<T>]){
+        let mut buffer_slice = self.buffer.map_write();
+        for i in 0..inputs.len(){
+            buffer_slice.set(inputs[i].index, inputs[i].attr);
+        }
     }
+
+
 }

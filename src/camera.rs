@@ -1,7 +1,7 @@
 use vecmath;
 
 pub struct Camera{
-    position: [f32;3],
+    position: [f32;3], 
     up: [f32;3]
 }
 
@@ -10,12 +10,6 @@ impl Camera{
         self.position[0] = x;
         self.position[1] = y;
         self.position[2] = z; 
-    }
-
-    pub fn add(&mut self, x: f32,y: f32,z: f32){
-        self.position[0] = self.position[0] + x;
-        self.position[1] = self.position[1] + y;
-        self.position[2] = self.position[2] + z; 
     }
 
     pub fn get_view_matrix(&self, direction: [f32; 3]) ->  [[f32; 4]; 4]{

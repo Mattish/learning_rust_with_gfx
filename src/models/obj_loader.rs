@@ -1,7 +1,8 @@
+extern crate obj;
+
 use vertex;
 use std::io::BufReader;
 use std::fs::File;
-use obj;
 
 pub fn load_obj_vertices(name: &'static str) -> Vec<vertex::Vertex>{
     let f = File::open(name).unwrap();

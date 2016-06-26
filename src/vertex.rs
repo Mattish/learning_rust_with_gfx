@@ -6,7 +6,7 @@ pub struct Vertex {
     pub normal: Vector3<f32>,
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub struct Attr {
     pub attr: Vector3<f32>,
     pub scale: f32,
