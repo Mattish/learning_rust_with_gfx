@@ -7,6 +7,7 @@ pub struct VertexBufferWrapper<T : glium::Vertex> {
     last_index: usize,
     pub buffer: VertexBuffer<T>,
     buffer_num: usize,
+    total_size: usize,
 }
 
 #[derive(Clone,Copy,Debug)]
@@ -28,8 +29,14 @@ impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
             remaining: size,
             last_index: 0,
             buffer: glium::VertexBuffer::empty_dynamic(display, size).unwrap(),
-            buffer_num: buffer_num
+            buffer_num: buffer_num,
+            total_size: size,
         }
+    }
+
+    pub fn clear(&mut self){
+        self.remaining = self.total_size;
+        self.last_index = 0;
     }
 
     pub fn add(&mut self, input_array: &[T]) -> Option<VertexBufferStoreInfo> {

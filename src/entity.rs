@@ -1,23 +1,13 @@
-pub struct EntityBufferInfo{
-    pub model_name: String,
-    pub buffer_num: usize,
-    pub index: usize,
-}
-
 pub struct Entity{
-    pub buffer_info: EntityBufferInfo,
+    pub model_name: String,
     pub pos: [f32;3],
     pub dirty: bool,
 }
 
 impl Entity{
-    pub fn new(model_name: String, buffer_num: usize, index: usize) -> Entity{
+    pub fn new(model_name: String) -> Entity{
         Entity{
-            buffer_info: EntityBufferInfo{
-                model_name: model_name,
-                buffer_num: buffer_num,
-                index: index,
-            },
+            model_name: model_name,
             pos: [0.0,0.0,0.0],
             dirty: false,
         }

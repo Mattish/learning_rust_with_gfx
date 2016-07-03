@@ -10,12 +10,11 @@ use buffer_store::BufferStore;
 use models;
 use std;
 use std::f64;
-use image;
-use std::io::Cursor;
 use time::{Duration, PreciseTime};
 use entity::Entity;
 use std::cell::RefCell;
 use std::rc::Rc;
+use entity_model_packer;
 
 pub struct Engine {
     camera: Camera,
@@ -50,32 +49,20 @@ impl Engine {
         println!("init start.");
         let start = PreciseTime::now();
 
-        let model_vertices = models::obj_loader::load_obj_vertices("teapot.obj");
+        let mut model_vertices = models::obj_loader::load_obj_vertices("teapot.obj");
         let mut indices = Vec::new();
-        for i in 0u16..model_vertices.len() as u16 {
+        for i in 0..model_vertices.len() as u16 {
             indices.push(i);
         }
-
+        self.buffer_store.load_model(&self.display, "teapot", &model_vertices, &indices);
+        let total_from_teapot = model_vertices.len() as u16;
+        model_vertices = models::obj_loader::load_obj_vertices("cube.obj");
+        indices = Vec::new();
+        for i in 0..model_vertices.len() as u16 {
+            indices.push(i + total_from_teapot);
+        }
         self.buffer_store.load_model(&self.display, "cube", &model_vertices, &indices);
 
-        let expected_width = 20;
-        let expected_height = expected_width;
-
-        let image = image::load(Cursor::new(&include_bytes!("../1368397855550.jpg")[..]),image::JPEG).unwrap()
-                         .resize_exact(expected_width,expected_height,image::FilterType::Nearest)
-                         .to_rgba();
-        
-
-        let higher = (expected_width / 2) as i32;
-        let lower = 0 - higher;
-        
-        for x in lower..higher {
-            for z in lower..higher {
-                let new_box = self.new_entity();
-                let pixel = image.get_pixel((x+higher) as u32,(z+higher) as u32);
-                new_box.borrow_mut().set_pos(x as f32, 0.0001,z as f32);
-            }
-        }
         let finish = start.to(PreciseTime::now());
         println!("init end took:{}ms.", finish.num_milliseconds());
         self.camera.set(2.0, 2.0, 2.0);
@@ -116,9 +103,9 @@ impl Engine {
         let frame_count_sin = self.frame_step_total.sin();
         let frame_count_sin_off = (self.frame_step_total / 1.3).sin();
 
-        self.camera.set(frame_count_cos as f32 * 100.0,
-                        frame_count_sin as f32 * 100.0,
-                        frame_count_sin_off as f32 * 100.0);
+        self.camera.set(frame_count_cos as f32 * 10.0,
+                        frame_count_sin as f32 * 10.0,
+                        frame_count_sin_off as f32 * 10.0);
 
         for ev in self.display.poll_events() {
             match ev {
@@ -126,19 +113,7 @@ impl Engine {
                 _ => return true,
             }
         }
-
-        for i in 0..self.entities.len() {
-            let mut e = self.entities[i].borrow_mut();
-            if !e.dirty{
-                continue;
-            }
-
-            self.buffer_store.update_attr(e.buffer_info.index,e.buffer_info.buffer_num,
-                vertex::Attr { attr: [e.pos[0], e.pos[1], e.pos[2]],scale:0.85,colour:[1.0,0.0,0.0] });
-            e.clean();
-        }
-
-        self.buffer_store.do_attr_updates();
+        
         true
     }
 
@@ -156,17 +131,18 @@ impl Engine {
         };
         let params = draw_parameters::get();
 
-        self.buffer_store.draw(&mut target, &self.program, &uniforms, &params, "cube");
+        let ent_pack = entity_model_packer::pack(self.entities.as_mut_slice());
+        self.buffer_store.input_attr_range(&self.display,ent_pack.attrs.as_slice());
+        self.buffer_store.draw(&mut target, &self.program, &uniforms, &params, ent_pack);
         target.finish().unwrap();
 
         self.frame_count = self.frame_count + 1;
     }
 
 
-    pub fn new_entity(&mut self) -> Rc<RefCell<Entity>>{
+    pub fn new_entity(&mut self, model_name: &str) -> Rc<RefCell<Entity>>{
         let attrs = [vertex::Attr { attr: [0.0, 0.0, 0.0],scale:0.85,colour:[1.0,0.0,0.0] }];
-        let buffer_store_info = self.buffer_store.input_attr_range(&self.display, &attrs, "cube");
-        let ent = Entity::new("cube".to_string(),buffer_store_info.buffer_num,buffer_store_info.start_index);
+        let ent = Entity::new(model_name.to_string());
         let rc = Rc::new(RefCell::new(ent));
         let ret_rc = rc.clone();
         self.entities.push(rc);

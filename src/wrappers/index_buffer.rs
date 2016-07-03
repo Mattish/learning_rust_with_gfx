@@ -9,7 +9,7 @@ pub struct IndexBufferWrapper {
     buffer_num: usize,
 }
 
-#[derive(Clone,Copy)]
+#[derive(Clone,Copy,Debug)]
 pub struct IndexBufferStoreInfo {
     pub buffer_num: usize,
     pub start_index: usize,
