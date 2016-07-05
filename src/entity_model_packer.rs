@@ -48,7 +48,7 @@ pub fn pack(entities:  &mut[Rc<RefCell<Entity>>]) -> EntityPackage{
         };
         for i in 0..ents_len{
             let e = ents[i].borrow();
-            package.attrs.push(vertex::Attr { attr: [e.pos[0], e.pos[1], e.pos[2]],scale:0.85,colour:[1.0,0.0,0.0] });
+            package.attrs.push(vertex::Attr { attr: [e.pos[0], e.pos[1], e.pos[2]],scale:0.85,colour:e.colour });
         }
         package.each.insert(key.clone(),ent_range);
         start_index = end_index;

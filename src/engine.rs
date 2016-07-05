@@ -20,6 +20,7 @@ pub struct Engine {
     display: GlutinFacade,
     program: Program,
     buffer_store: BufferStore,
+    frame_number: i32,
     frame_count: i32,
     frame_count_timer: PreciseTime,
     frame_step: f64,
@@ -35,6 +36,7 @@ impl Engine {
             program: program,
             camera: Camera::new(),
             buffer_store: BufferStore::new(),
+            frame_number: 0,
             frame_count: 0,
             frame_count_timer: PreciseTime::now(),
             frame_step: Duration::seconds(1).num_nanoseconds().unwrap() as f64 / 60.0,
@@ -48,19 +50,19 @@ impl Engine {
         println!("init start.");
         let start = PreciseTime::now();
 
-        let mut model_vertices = models::obj_loader::load_obj_vertices("teapot.obj");
+        let mut model_vertices = models::obj_loader::load_obj_vertices("cube.obj");
         let mut indices = Vec::new();
         for i in 0..model_vertices.len() as u16 {
             indices.push(i);
         }
-        self.buffer_store.load_model(&self.display, "teapot", &model_vertices, &indices);
+        self.buffer_store.load_model(&self.display, "cube", &model_vertices, &indices);
         let total_from_teapot = model_vertices.len() as u16;
-        model_vertices = models::obj_loader::load_obj_vertices("cube.obj");
+        model_vertices = models::obj_loader::load_obj_vertices("teapot.obj");
         indices = Vec::new();
         for i in 0..model_vertices.len() as u16 {
             indices.push(i + total_from_teapot);
         }
-        self.buffer_store.load_model(&self.display, "cube", &model_vertices, &indices);
+        self.buffer_store.load_model(&self.display, "teapot", &model_vertices, &indices);
 
         let finish = start.to(PreciseTime::now());
         println!("init end took:{}ms.", finish.num_milliseconds());
@@ -69,7 +71,7 @@ impl Engine {
 
     pub fn update_and_draw(&mut self) -> bool {
         self.frame_count += 1;
-
+        self.frame_number += 1;
         if self.frame_count_timer.to(PreciseTime::now()) > Duration::seconds(1) {
             println!("fps:{}", self.frame_count);
             self.frame_count_timer = PreciseTime::now();
@@ -102,9 +104,9 @@ impl Engine {
         let frame_count_sin = self.frame_step_total.sin();
         let frame_count_sin_off = (self.frame_step_total / 1.3).sin();
 
-        self.camera.set(frame_count_cos as f32 * 10.0,
-                        frame_count_sin as f32 * 10.0,
-                        frame_count_sin_off as f32 * 10.0);
+        self.camera.set(frame_count_cos as f32 * 20.0,
+                        frame_count_sin as f32 * 20.0,
+                        frame_count_sin_off as f32 * 20.0);
 
         for ev in self.display.poll_events() {
             match ev {
@@ -131,11 +133,12 @@ impl Engine {
         let params = draw_parameters::get();
 
         let ent_pack = entity_model_packer::pack(self.entities.as_mut_slice());
-        self.buffer_store.input_attr_range(&self.display, ent_pack.attrs.as_slice());
+        if self.frame_number < 20 {
+            println!("something! frame_number:{}",self.frame_number);
+            self.buffer_store.input_attr_range(&self.display, ent_pack.attrs.as_slice());
+        }
         self.buffer_store.draw(&mut target, &self.program, &uniforms, &params, ent_pack);
         target.finish().unwrap();
-
-        self.frame_count = self.frame_count + 1;
     }
 
 

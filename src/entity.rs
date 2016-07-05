@@ -1,6 +1,7 @@
 pub struct Entity {
     pub model_name: String,
-    pub pos: [f32; 3]
+    pub pos: [f32; 3],
+    pub colour: [f32; 3],
 }
 
 impl Entity {
@@ -8,6 +9,7 @@ impl Entity {
         Entity {
             model_name: model_name,
             pos: [0.0, 0.0, 0.0],
+            colour: [0.0, 1.0, 0.0]
         }
     }
 
@@ -15,5 +17,12 @@ impl Entity {
         self.pos[0] = x;
         self.pos[1] = y;
         self.pos[2] = z;
+    }
+
+    /// Change RGB values of the entity. Range is from 0.0 -> 1.0.
+    pub fn set_colour(&mut self, r: f32, g: f32, b: f32) {
+        self.colour[0] = r;
+        self.colour[1] = g;
+        self.colour[2] = b;
     }
 }
