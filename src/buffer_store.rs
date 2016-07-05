@@ -31,8 +31,6 @@ impl BufferStore {
         for key in ent_pack.each.keys(){
             match self.models.get(key){
                 Some(model) => {
-                    let vertex_start = model.model_buffer_info.start_index;
-                    let vertex_end = model.model_buffer_info.start_index + model.model_buffer_info.length;
                     let index_start = model.index_buffer_info.start_index;
                     let index_end = model.index_buffer_info.start_index + model.index_buffer_info.length;
 

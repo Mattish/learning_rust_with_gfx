@@ -27,9 +27,8 @@ pub fn pack(entities:  &mut[Rc<RefCell<Entity>>]) -> EntityPackage{
 
     let mut ents_map = HashMap::new();
 
-    let mut running_total = 0;
     for i in 0..entities.len() {
-            let mut e = entities[i].borrow();
+            let e = entities[i].borrow();
 
             package.total = package.total + 1;
             let mut models = ents_map.entry(e.model_name.clone()).or_insert(Vec::new());

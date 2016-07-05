@@ -4,7 +4,6 @@ use glium::Surface;
 use glium::backend::glutin_backend::GlutinFacade;
 use camera::Camera;
 use camera;
-use vertex;
 use draw_parameters;
 use buffer_store::BufferStore;
 use models;
@@ -40,7 +39,7 @@ impl Engine {
             frame_count_timer: PreciseTime::now(),
             frame_step: Duration::seconds(1).num_nanoseconds().unwrap() as f64 / 60.0,
             frame_step_total: 0.0,
-            last_frame_time: PreciseTime::now(), 
+            last_frame_time: PreciseTime::now(),
             entities: Vec::new(),
         }
     }
@@ -68,7 +67,7 @@ impl Engine {
         self.camera.set(2.0, 2.0, 2.0);
     }
 
-    pub fn update_and_draw(&mut self) -> bool{
+    pub fn update_and_draw(&mut self) -> bool {
         self.frame_count += 1;
 
         if self.frame_count_timer.to(PreciseTime::now()) > Duration::seconds(1) {
@@ -80,10 +79,10 @@ impl Engine {
         let old = self.last_frame_time;
         self.last_frame_time = PreciseTime::now();
         let frame_took = old.to(self.last_frame_time);
-        let frame_took_nano = frame_took.num_nanoseconds().unwrap() as f64;  
+        let frame_took_nano = frame_took.num_nanoseconds().unwrap() as f64;
         let frame_took_delta = frame_took_nano / self.frame_step as f64;
-        if !self.update(frame_took_delta){
-            return false
+        if !self.update(frame_took_delta) {
+            return false;
         }
         self.draw();
 
@@ -113,7 +112,7 @@ impl Engine {
                 _ => return true,
             }
         }
-        
+
         true
     }
 
@@ -132,7 +131,7 @@ impl Engine {
         let params = draw_parameters::get();
 
         let ent_pack = entity_model_packer::pack(self.entities.as_mut_slice());
-        self.buffer_store.input_attr_range(&self.display,ent_pack.attrs.as_slice());
+        self.buffer_store.input_attr_range(&self.display, ent_pack.attrs.as_slice());
         self.buffer_store.draw(&mut target, &self.program, &uniforms, &params, ent_pack);
         target.finish().unwrap();
 
@@ -140,12 +139,12 @@ impl Engine {
     }
 
 
-    pub fn new_entity(&mut self, model_name: &str) -> Rc<RefCell<Entity>>{
-        let attrs = [vertex::Attr { attr: [0.0, 0.0, 0.0],scale:0.85,colour:[1.0,0.0,0.0] }];
+    pub fn new_entity(&mut self, model_name: &str) -> Rc<RefCell<Entity>> {
+        // let attrs = [vertex::Attr { attr: [0.0, 0.0, 0.0],scale:0.85,colour:[1.0,0.0,0.0] }];
         let ent = Entity::new(model_name.to_string());
         let rc = Rc::new(RefCell::new(ent));
         let ret_rc = rc.clone();
         self.entities.push(rc);
         ret_rc
-    }           
+    }
 }
