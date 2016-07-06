@@ -19,5 +19,5 @@ pub fn load_obj_vertices(name: &'static str) -> Vec<vertex::Vertex>{
         verts.push(vertex::Vertex{vertex:vert.position,normal:vert.normal})
     }
     
-    return verts;
+    verts
 }

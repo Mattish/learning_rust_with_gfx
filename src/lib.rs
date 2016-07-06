@@ -1,3 +1,5 @@
+#![feature(plugin)]
+#![plugin(clippy)]
 #[macro_use]
 extern crate glium;
 extern crate time;
@@ -14,7 +16,7 @@ mod wrappers;
 mod models;
 mod entity;
 mod entity_model_packer;
-
+ 
 use glium::DisplayBuild;
 use std::io::Cursor; 
 
@@ -39,7 +41,7 @@ pub fn run() {
     let lower = 0 - higher;
     for x in lower..higher {
         for z in lower..higher {
-            let mut model_name = "cube";
+            let model_name = "cube";
             // if z % 2 == 0{
             //     model_name = "teapot"; 
             // }

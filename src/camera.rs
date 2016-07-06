@@ -44,9 +44,10 @@ pub fn get_perspectivei(height: u32, width: u32) -> [[f32;4]; 4]{
 }
 
 pub fn get_perspective(height: f32, width: f32) -> [[f32; 4]; 4] {
+    use std::f32;
     let aspect_ratio = height/ width;
 
-    let fov: f32 = 3.141592 / 3.0;
+    let fov: f32 = f32::consts::PI / 3.0;
     let zfar = 1024.0;
     let znear = 0.1;
 

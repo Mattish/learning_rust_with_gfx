@@ -27,12 +27,12 @@ pub fn pack(entities:  &mut[Rc<RefCell<Entity>>]) -> EntityPackage{
 
     let mut ents_map = HashMap::new();
 
-    for i in 0..entities.len() {
-            let e = entities[i].borrow();
+    for ent in entities {
+            let e = ent.borrow();
 
-            package.total = package.total + 1;
-            let mut models = ents_map.entry(e.model_name.clone()).or_insert(Vec::new());
-            models.push(entities[i].clone());
+            package.total += 1;
+            let mut models = ents_map.entry(e.model_name.clone()).or_insert_with(||{Vec::new()});
+            models.push(ent.clone());
     }
 
     let mut start_index = 0;
@@ -40,14 +40,14 @@ pub fn pack(entities:  &mut[Rc<RefCell<Entity>>]) -> EntityPackage{
     for key in ents_map.keys(){
         let ents = ents_map.get(key).unwrap();
         let ents_len = ents.len();
-        end_index = end_index + ents_len;
+        end_index += ents_len;
 
         let ent_range = EntityRange{
             start: start_index, 
             end: end_index
         };
-        for i in 0..ents_len{
-            let e = ents[i].borrow();
+        for ent in ents{
+            let e = ent.borrow();
             package.attrs.push(vertex::Attr { attr: [e.pos[0], e.pos[1], e.pos[2]],scale:0.85,colour:e.colour });
         }
         package.each.insert(key.clone(),ent_range);

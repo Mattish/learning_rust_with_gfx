@@ -47,8 +47,8 @@ impl<T : glium::Vertex + Sized> VertexBufferWrapper<T> {
             length: array_len,
         };
         buffer_slice.write(input_array);
-        counter = counter + array_len;
-        self.remaining = self.remaining - array_len;
+        counter += array_len;
+        self.remaining -= array_len;
         self.last_index = counter;
         Some(store_info)
     }

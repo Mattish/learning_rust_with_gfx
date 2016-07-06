@@ -29,37 +29,31 @@ impl BufferStore {
     pub fn draw<U : Uniforms>(&mut self, target: &mut Frame, program: &Program, uniforms: &U, params: &DrawParameters, ent_pack: EntityPackage)
     {
         for key in ent_pack.each.keys(){
-            match self.models.get(key){
-                Some(model) => {
-                    // let vertex_start = model.model_buffer_info.start_index;
-                    // let vertex_end = model.model_buffer_info.start_index + model.model_buffer_info.length;
+            if let Some(model) = self.models.get(key){
+                // let vertex_start = model.model_buffer_info.start_index;
+                // let vertex_end = model.model_buffer_info.start_index + model.model_buffer_info.length;
+                
+                let index_start = model.index_buffer_info.start_index;
+                let index_end = model.index_buffer_info.start_index + model.index_buffer_info.length;
+
+                if let Some(model_instances) = ent_pack.each.get(key){                            
+                    //TODO: This doesn't work for model_instances split over many buffers 
                     
-                    let index_start = model.index_buffer_info.start_index;
-                    let index_end = model.index_buffer_info.start_index + model.index_buffer_info.length;
+                    target.draw((
+                        &self.vertex_buffers[model.model_buffer_info.buffer_num].buffer,
 
-                    match ent_pack.each.get(key){
-                        Some(model_instances) => {
-                                                    
-                            //TODO: This doesn't work for model_instances split over many buffers 
-                            
-                            target.draw((
-                                &self.vertex_buffers[model.model_buffer_info.buffer_num].buffer,
+                        self.attr_buffers[0].buffer
+                            .slice(model_instances.start..model_instances.end).unwrap().per_instance().unwrap()),
+                        
+                        self.index_buffers[model.index_buffer_info.buffer_num].buffer
+                            .slice(index_start..index_end).unwrap(),
 
-                                self.attr_buffers[0].buffer
-                                    .slice(model_instances.start..model_instances.end).unwrap().per_instance().unwrap()),
-                                
-                                self.index_buffers[model.index_buffer_info.buffer_num].buffer
-                                    .slice(index_start..index_end).unwrap(),
-
-                                program,
-                                uniforms,
-                                params).unwrap();
-                        }
-                        _ => {}
-                    }
+                        program,
+                        uniforms,
+                        params).unwrap();
+                    
                 }
-                _ => {}
-            };
+            }
         }
     }
 
@@ -82,11 +76,8 @@ impl BufferStore {
     pub fn input_attr_range(&mut self,display: &GlutinFacade, attr: &[vertex::Attr]) -> VertexBufferStoreInfo {
         for i in 0..self.attr_buffers.len(){
             self.attr_buffers[i].clear();
-            match self.attr_buffers[i].add(attr) {
-                Some(store_info) => {
-                    return store_info;
-                    },
-                _ => {}
+            if let Some(store_info) = self.attr_buffers[i].add(attr) {
+                return store_info
             }
         }
         println!("Creating new attr buffer index:{}",self.attr_buffers.len());
@@ -97,10 +88,9 @@ impl BufferStore {
     }
 
     fn input_verticies(&mut self,display: &GlutinFacade, input_array: &[vertex::Vertex]) -> VertexBufferStoreInfo {
-        for wrapper in self.vertex_buffers.iter_mut() {
-            match wrapper.add(input_array) {
-                Some(store_info) => return store_info,
-                _ => {}
+        for wrapper in &mut self.vertex_buffers {
+            if let Some(store_info) = wrapper.add(input_array) {
+                return store_info
             }
         }
         println!("Creating new vert buffer index:{}",self.vertex_buffers.len());
@@ -111,10 +101,9 @@ impl BufferStore {
     }
 
     fn input_indices(&mut self,display: &GlutinFacade, input_array: &[u16]) -> IndexBufferStoreInfo {
-        for wrapper in self.index_buffers.iter_mut() {
-            match wrapper.add(input_array) {
-                Some(store_info) => return store_info,
-                _ => {}
+        for wrapper in &mut self.index_buffers {
+            if let Some(store_info) = wrapper.add(input_array) {
+                 return store_info
             }
         }
 

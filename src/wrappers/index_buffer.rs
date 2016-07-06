@@ -42,9 +42,9 @@ impl IndexBufferWrapper {
         };
         for v in input_array.into_iter() {
             writer_mapping.set(counter, *v);
-            counter = counter + 1;
+            counter += 1;
         }
-        self.remaining = self.remaining - array_len;
+        self.remaining -= array_len;
         self.last_index = counter;
         Some(store_info)
     }

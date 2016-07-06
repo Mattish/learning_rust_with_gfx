@@ -99,7 +99,7 @@ impl Engine {
 
         let frame_step: f64 = (std::f64::consts::PI * 1.0) / 1200.0;
         let frame_step_w_delta = frame_step * delta;
-        self.frame_step_total = self.frame_step_total + frame_step_w_delta;
+        self.frame_step_total += frame_step_w_delta;
         let frame_count_cos = self.frame_step_total.cos();
         let frame_count_sin = self.frame_step_total.sin();
         let frame_count_sin_off = (self.frame_step_total / 1.3).sin();
