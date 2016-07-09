@@ -1,13 +1,13 @@
 pub struct Entity {
-    pub model_name: String,
+    pub model_id: usize,
     pub pos: [f32; 3],
     pub colour: [f32; 3],
 }
 
 impl Entity {
-    pub fn new(model_name: String) -> Entity {
+    pub fn new(model_id: usize) -> Entity {
         Entity {
-            model_name: model_name,
+            model_id: model_id,
             pos: [0.0, 0.0, 0.0],
             colour: [0.0, 1.0, 0.0]
         }

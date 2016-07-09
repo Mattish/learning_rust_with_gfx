@@ -13,7 +13,7 @@ pub struct BufferStore {
     vertex_buffers: Vec<VertexBufferWrapper<vertex::Vertex>>,
     attr_buffers: Vec<VertexBufferWrapper<vertex::Attr>>,
     index_buffers: Vec<IndexBufferWrapper>,
-    models: HashMap<String,ModelInfo>,
+    models: HashMap<usize,ModelInfo>,
 }
 
 impl BufferStore {
@@ -38,26 +38,27 @@ impl BufferStore {
 
                 if let Some(model_instances) = ent_pack.each.get(key){                            
                     //TODO: This doesn't work for model_instances split over many buffers 
-                    
-                    target.draw((
-                        &self.vertex_buffers[model.model_buffer_info.buffer_num].buffer,
+                    if model_instances.start != model_instances.end{
+                        target.draw((
+                            &self.vertex_buffers[model.model_buffer_info.buffer_num].buffer,
 
-                        self.attr_buffers[0].buffer
-                            .slice(model_instances.start..model_instances.end).unwrap().per_instance().unwrap()),
-                        
-                        self.index_buffers[model.index_buffer_info.buffer_num].buffer
-                            .slice(index_start..index_end).unwrap(),
+                            self.attr_buffers[0].buffer
+                                .slice(model_instances.start..model_instances.end).unwrap().per_instance().unwrap()),
+                            
+                            self.index_buffers[model.index_buffer_info.buffer_num].buffer
+                                .slice(index_start..index_end).unwrap(),
 
-                        program,
-                        uniforms,
-                        params).unwrap();
+                            program,
+                            uniforms,
+                            params).unwrap();
+                    }
                     
                 }
             }
         }
     }
 
-    pub fn load_model(&mut self,display: &GlutinFacade, name: &str, 
+    pub fn load_model(&mut self,display: &GlutinFacade, id: usize, 
                         verticies: &[vertex::Vertex],
                         indicies: &[u16]) 
                         -> ModelInfo {
@@ -68,7 +69,7 @@ impl BufferStore {
             model_buffer_info: vertex_info,
             index_buffer_info: index_info,
         };
-        self.models.insert(name.to_string(),model_info);
+        self.models.insert(id,model_info);
         println!("Loaded model:{:?}",model_info);
         model_info
     }

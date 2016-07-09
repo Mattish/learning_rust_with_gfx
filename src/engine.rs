@@ -26,7 +26,7 @@ pub struct Engine {
     frame_step: f64,
     frame_step_total: f64,
     last_frame_time: PreciseTime,
-    entities: Vec<Rc<RefCell<Entity>>>,
+    entities: Vec<Vec<Rc<RefCell<Entity>>>>,
 }
 
 impl Engine {
@@ -55,14 +55,14 @@ impl Engine {
         for i in 0..model_vertices.len() as u16 {
             indices.push(i);
         }
-        self.buffer_store.load_model(&self.display, "cube", &model_vertices, &indices);
+        self.buffer_store.load_model(&self.display, 0, &model_vertices, &indices);
         let total_from_teapot = model_vertices.len() as u16;
         model_vertices = models::obj_loader::load_obj_vertices("teapot.obj");
         indices = Vec::new();
         for i in 0..model_vertices.len() as u16 {
             indices.push(i + total_from_teapot);
         }
-        self.buffer_store.load_model(&self.display, "teapot", &model_vertices, &indices);
+        self.buffer_store.load_model(&self.display, 1, &model_vertices, &indices);
 
         let finish = start.to(PreciseTime::now());
         println!("init end took:{}ms.", finish.num_milliseconds());
@@ -83,15 +83,16 @@ impl Engine {
         let frame_took = old.to(self.last_frame_time);
         let frame_took_nano = frame_took.num_nanoseconds().unwrap() as f64;
         let frame_took_delta = frame_took_nano / self.frame_step as f64;
+        let update_start = PreciseTime::now();
         if !self.update(frame_took_delta) {
             return false;
         }
+        let draw_start = PreciseTime::now();
         self.draw();
-
-        if frame_took_delta < 0.9 {
-            let nano_to_sleep = self.frame_step - frame_took_nano;
-            std::thread::sleep(std::time::Duration::new(0, (nano_to_sleep / 2.0) as u32));
-        }
+        // if frame_took_delta < 0.9 {
+        //     let nano_to_sleep = self.frame_step - frame_took_nano;
+        //     std::thread::sleep(std::time::Duration::new(0, (nano_to_sleep / 2.0) as u32));
+        // }
         true
     }
 
@@ -119,6 +120,7 @@ impl Engine {
     }
 
     fn draw(&mut self) {
+        let mut draw_start = PreciseTime::now();
         let mut target = self.display.draw();
 
         target.clear_color_and_depth((1.0, 1.0, 1.0, 0.0), 1.0);
@@ -131,23 +133,24 @@ impl Engine {
             view: view
         };
         let params = draw_parameters::get();
-
-        let ent_pack = entity_model_packer::pack(self.entities.as_mut_slice());
-        if self.frame_number < 20 {
-            println!("something! frame_number:{}",self.frame_number);
-            self.buffer_store.input_attr_range(&self.display, ent_pack.attrs.as_slice());
-        }
+        
+        let ent_pack = entity_model_packer::pack(&mut self.entities);
+        self.buffer_store.input_attr_range(&self.display, ent_pack.attrs.as_slice());
         self.buffer_store.draw(&mut target, &self.program, &uniforms, &params, ent_pack);
+        
         target.finish().unwrap();
     }
 
 
-    pub fn new_entity(&mut self, model_name: &str) -> Rc<RefCell<Entity>> {
-        // let attrs = [vertex::Attr { attr: [0.0, 0.0, 0.0],scale:0.85,colour:[1.0,0.0,0.0] }];
-        let ent = Entity::new(model_name.to_string());
+    pub fn new_entity(&mut self, model_id: usize) -> Rc<RefCell<Entity>> {
+        let ent = Entity::new(model_id);
         let rc = Rc::new(RefCell::new(ent));
         let ret_rc = rc.clone();
-        self.entities.push(rc);
+        while self.entities.len() < (model_id + 1){
+            self.entities.push(Vec::new());
+        }
+        self.entities[model_id].push(rc);
+
         ret_rc
     }
 }

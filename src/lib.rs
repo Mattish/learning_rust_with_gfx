@@ -29,7 +29,7 @@ pub fn run() {
     //let image = glium::texture::RawImage2d::from_raw_rgba_reversed(image.into_raw(), image_dimensions);
     //let texture = glium::texture::Texture2d::new(&display, image).unwrap();
     
-    let expected_width = 100;
+    let expected_width = 500;
     let expected_height = expected_width;
 
     let image = image::load(Cursor::new(&include_bytes!("../1368397855550.jpg")[..]),image::JPEG).unwrap()
@@ -41,11 +41,11 @@ pub fn run() {
     let lower = 0 - higher;
     for x in lower..higher {
         for z in lower..higher {
-            let model_name = "cube";
-            // if z % 2 == 0{
-            //     model_name = "teapot"; 
-            // }
-            let new_box = engine.new_entity(model_name);
+            let mut model_id = 0;
+            if z == x{
+                model_id = 1; 
+            }
+            let new_box = engine.new_entity(model_id);
             let pixel = image.get_pixel((x+higher) as u32,(z+higher) as u32);
             let mut box_borrow = new_box.borrow_mut();
             box_borrow.set_pos(x as f32, 0.0001,z as f32);
